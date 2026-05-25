@@ -1,0 +1,496 @@
+:root {
+    /* MAIN PINK PALETTE */
+    --primary: #ff4d94;
+    --primary-light: #ff85b3;
+    --primary-dark: #a0004f;
+
+    --secondary: #ffd1e6;
+    --accent: #fff0f7;
+
+    /* TEXT + GLASS */
+    --text: #2d1020;
+    --glass: rgba(255, 255, 255, 0.16);
+    --border: rgba(255, 255, 255, 0.25);
+
+    /* SMOOTHER PINK → DARK PINK BACKGROUND */
+    --bg: linear-gradient(
+        135deg,
+        #fff5fa 0%,
+        #ffd6e8 20%,
+        #ff9fc7 45%,
+        #ff5c9f 70%,
+        #d81b73 88%,
+        #7a003c 100%
+    );
+
+    /* EXTRA GLOW COLORS */
+    --glow-light: rgba(255, 182, 213, 0.35);
+    --glow-dark: rgba(255, 77, 148, 0.25);
+}
+
+/* GLOBAL */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.15), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(255,255,255,0.08), transparent 35%),
+        var(--bg);
+
+    background-attachment: fixed;
+
+    min-height: 100vh;
+
+    color: var(--text);
+
+    overflow-x: hidden;
+
+    scroll-behavior: smooth;
+
+    position: relative;
+}
+
+/* SOFT GLOW BLOBS */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    filter: blur(120px);
+    z-index: -1;
+}
+
+body::before {
+    background: var(--glow-light);
+    top: -120px;
+    left: -120px;
+}
+
+body::after {
+    background: var(--glow-dark);
+    bottom: -150px;
+    right: -120px;
+}
+
+/* NAVBAR */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 1rem 6%;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border-bottom: 1px solid var(--border);
+
+    box-shadow:
+        0 8px 32px rgba(255, 77, 148, 0.18);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+}
+
+.navbar ul {
+    display: flex;
+    list-style: none;
+    gap: 25px;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    transition: 0.3s ease;
+    position: relative;
+}
+
+.navbar a::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    background: white;
+    left: 0;
+    bottom: -5px;
+    transition: 0.3s ease;
+}
+
+.navbar a:hover::after {
+    width: 100%;
+}
+
+.navbar a:hover {
+    opacity: 0.85;
+}
+
+/* HERO */
+.hero {
+    min-height: 90vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.hero-card {
+    max-width: 850px;
+
+    background: rgba(255, 255, 255, 0.14);
+
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+
+    border: 1px solid rgba(255, 255, 255, 0.22);
+
+    border-radius: 32px;
+
+    padding: 3rem;
+
+    box-shadow:
+        0 10px 40px rgba(255, 77, 148, 0.22);
+}
+
+.hero h1 {
+    font-size: 3.3rem;
+    color: white;
+    margin-bottom: 1rem;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.hero p {
+    font-size: 1.1rem;
+    line-height: 1.9;
+    color: rgba(255,255,255,0.9);
+}
+
+/* MAIN CONTAINER */
+.container {
+    width: min(1200px, 90%);
+    margin: auto;
+    padding: 5rem 0;
+}
+
+/* GLASS CARDS */
+.glass-card {
+    background: rgba(255, 255, 255, 0.12);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border: 1px solid rgba(255, 255, 255, 0.22);
+
+    border-radius: 28px;
+
+    padding: 2rem;
+
+    margin-bottom: 2rem;
+
+    box-shadow:
+        0 8px 32px rgba(255, 77, 148, 0.18);
+
+    transition: 0.35s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-6px);
+
+    box-shadow:
+        0 14px 42px rgba(255, 77, 148, 0.28);
+}
+
+.glass-card h2 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+/* INPUTS */
+input,
+textarea,
+select {
+    width: 100%;
+
+    padding: 14px 16px;
+
+    margin: 10px 0;
+
+    border-radius: 16px;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    background: rgba(255, 255, 255, 0.14);
+
+    backdrop-filter: blur(12px);
+
+    color: white;
+
+    font-size: 1rem;
+
+    outline: none;
+
+    transition: 0.3s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border: 1px solid rgba(255,255,255,0.5);
+
+    box-shadow:
+        0 0 18px rgba(255, 133, 179, 0.35);
+}
+
+/* BUTTONS */
+button {
+    background: linear-gradient(
+        135deg,
+        #ff85b3,
+        #ff4d94,
+        #c2185b
+    );
+
+    color: white;
+
+    border: none;
+
+    padding: 14px 24px;
+
+    border-radius: 16px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    transition: 0.3s ease;
+
+    box-shadow:
+        0 8px 24px rgba(255, 77, 148, 0.35);
+}
+
+button:hover {
+    transform: translateY(-3px) scale(1.03);
+
+    box-shadow:
+        0 12px 30px rgba(255, 77, 148, 0.45);
+}
+
+/* HIGHLIGHT TEXT */
+.highlight {
+    color: white;
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+/* FLEX UTILITIES */
+.row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.col {
+    flex: 1;
+    min-width: 250px;
+}
+
+/* EXAMPLES */
+.examples-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.examples-bar span {
+    color: white;
+    font-weight: bold;
+}
+
+.sample-btn {
+    background: rgba(255, 255, 255, 0.14);
+
+    border: 1px solid rgba(255, 255, 255, 0.22);
+
+    backdrop-filter: blur(12px);
+
+    color: white;
+
+    padding: 8px 14px;
+
+    border-radius: 999px;
+
+    cursor: pointer;
+
+    transition: 0.3s ease;
+
+    font-size: 0.85rem;
+}
+
+.sample-btn:hover {
+    background: rgba(255,255,255,0.22);
+    transform: translateY(-2px);
+}
+
+/* RESULT BOX */
+.result-box,
+#plot-container {
+    margin-top: 20px;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    border: 1px solid rgba(255, 255, 255, 0.22);
+
+    backdrop-filter: blur(18px);
+
+    border-radius: 22px;
+
+    padding: 1.5rem;
+
+    color: white;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255,255,255,0.8);
+}
+
+/* ANIMATION */
+.fade-in {
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.4rem;
+    }
+
+    .hero-card {
+        padding: 2rem;
+    }
+
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .navbar ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .row {
+        flex-direction: column;
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* --- PRINT STYLES --- */
+@media print {
+    /* Hide everything except the result area */
+    nav, .hero, #discussion, #examples, .calculator-form, .sample-container, 
+    footer, .button-group, hr, .section-title {
+        display: none !important;
+    }
+
+    body {
+        background: white !important;
+        color: black !important;
+    }
+
+    .container {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    #results {
+        display: block !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 20px !important;
+    }
+
+    .glass-card {
+        background: white !important;
+        border: 2px solid #eee !important;
+        box-shadow: none !important;
+    }
+
+    /* Create an Academic Report Header for the PDF */
+    #results::before {
+        content: "Numerical Methods: Adaptive Simpson Quadrature Report";
+        display: block;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 30px;
+        color: #ff8fb1;
+        border-bottom: 2px solid #ff8fb1;
+        padding-bottom: 10px;
+    }
+
+    /* Ensure the graph fits on the page */
+    #graph-div {
+        width: 100% !important;
+        height: 400px !important;
+    }
+}
+
+/* Button Styling for the Print Button */
+.print-btn {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-weight: bold;
+}
+.print-btn:hover { background: #222; }

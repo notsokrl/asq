@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaptive Simpson Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">A.S.Q.</div>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#discussion">Discussion</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#calculator">Calculator</a></li>
+        </ul>
+    </nav>
+    
+    {% block content %}{% endblock %}
+
+    <footer style="text-align: center; padding: 2rem; color: #ff8fb1;">
+        <p>© 2026 Numerical Methods Project</p>
+    </footer>
+</body>
+</html>
