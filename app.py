@@ -11,19 +11,22 @@ def index():
 def calculate():
     try:
         data = request.json
-        func = data.get('func')
+        func_str = data.get('func')
         a = float(data.get('a'))
         b = float(data.get('b'))
         tol = float(data.get('tol'))
 
-        res, count, gx, gy = adaptive_simpson_calc(func, a, b, tol)
+        # Unpacking the 6 values from the Tuple
+        res, count, gx, gy, steps, init_data = adaptive_simpson_calc(func_str, a, b, tol)
         
         return jsonify({
             'success': True,
-            'result': f"{res:.8f}",
+            'result': f"{res:.10f}", # res is now a float, so .10f works!
             'count': count,
             'graph_x': gx,
-            'graph_y': gy
+            'graph_y': gy,
+            'steps': steps,
+            'initial_data': init_data
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})

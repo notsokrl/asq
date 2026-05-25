@@ -7,77 +7,79 @@ from sympy.parsing.sympy_parser import (
     convert_xor
 )
 
-# 1. Define the names the parser should recognize immediately
 MATH_NAMES = {
     'sin': sin, 'cos': cos, 'tan': tan, 
     'asin': asin, 'acos': acos, 'atan': atan,
     'exp': exp, 'log': log, 'ln': log, 
     'sqrt': sqrt, 'pi': pi, 
-    'e': E, 'E': E  # Map both e and E to Euler's number
+    'e': E, 'E': E 
 }
 
 def adaptive_simpson_calc(func_str, a, b, tol):
     x = symbols('x')
-    
-    # 2. Setup transformations
-    transformations = standard_transformations + (
-        implicit_multiplication_application,
-        convert_xor
-    )
+    transformations = standard_transformations + (implicit_multiplication_application, convert_xor)
 
     try:
-        # 3. Parse with local_dict so 'e' and functions are recognized correctly
         expr = parse_expr(func_str, local_dict=MATH_NAMES, transformations=transformations)
-        
-        # 4. Convert to a function that understands NumPy arrays
         f = lambdify(x, expr, modules=['numpy', MATH_NAMES])
-        
-        # Test the function with a single value to catch errors early
-        f(a)
+        f(a) # Test evaluation
     except Exception as e:
-        raise ValueError(f"Could not parse function. Try using 'exp(2x)' instead of 'e^2x'. Error: {str(e)}")
+        raise ValueError(f"Math Error: {str(e)}")
 
+    steps_log = []
     recursive_count = 0
 
-    def simpson_rule(a, b):
-        try:
-            # Note: We use float() to ensure we don't have SymPy objects in calculations
-            fa = float(f(a))
-            fb = float(f(b))
-            mid = (a + b) / 2
-            fm = float(f(mid))
-            return (abs(b - a) / 6) * (fa + 4 * fm + fb)
-        except Exception:
-            raise ValueError("The function is undefined at some points in this interval.")
+    # Initial values for the Textbook Step 1 breakdown
+    m_initial = (a + b) / 2
+    initial_values = {
+        'fa': round(float(f(a)), 6),
+        'fm': round(float(f(m_initial)), 6),
+        'fb': round(float(f(b)), 6),
+        'm': round(m_initial, 6),
+        'h': round(abs(b - a) / 2, 6)
+    }
 
-    def recursive_step(a, b, tol, whole):
+    def simpson_rule(start, end):
+        fa, fb = float(f(start)), float(f(end))
+        mid = (start + end) / 2
+        fm = float(f(mid))
+        return (abs(end - start) / 6) * (fa + 4 * fm + fb)
+
+    def recursive_step(a_in, b_in, tol_in, whole_in, depth):
         nonlocal recursive_count
         recursive_count += 1
         
-        mid = (a + b) / 2
-        left = simpson_rule(a, mid)
-        right = simpson_rule(mid, b)
+        mid = (a_in + b_in) / 2
+        left = simpson_rule(a_in, mid)
+        right = simpson_rule(mid, b_in)
+        error = abs(left + right - whole_in)
+        threshold = 15 * tol_in
         
-        if abs(left + right - whole) <= 15 * tol:
-            return left + right + (left + right - whole) / 15.0
+        # --- FIX START ---
+        # Added 's_whole' so JavaScript can display the estimate in Step 2
+        steps_log.append({
+            'depth': depth,
+            'interval': f"[{round(a_in, 4)}, {round(b_in, 4)}]",
+            's_whole': round(whole_in, 6), 
+            'error': f"{error:.8f}",
+            'status': "Accepted" if error <= threshold else "Subdividing"
+        })
+        # --- FIX END ---
+
+        if error <= threshold:
+            return left + right + (left + right - whole_in) / 15.0
         
-        # Safety break for infinite recursion
-        if recursive_count > 1000:
-            return left + right
+        if depth > 20: return left + right
 
-        return recursive_step(a, mid, tol/2.0, left) + \
-               recursive_step(mid, b, tol/2.0, right)
-
-    # Calculate graph points
-    graph_x = np.linspace(a, b, 100)
-    try:
-        # Evaluate function across the array for the graph
-        graph_y = [float(f(val)) for val in graph_x]
-        graph_x = graph_x.tolist()
-    except:
-        graph_x, graph_y = [], []
+        return recursive_step(a_in, mid, tol_in/2.0, left, depth + 1) + \
+               recursive_step(mid, b_in, tol_in/2.0, right, depth + 1)
 
     initial_guess = simpson_rule(a, b)
-    result = recursive_step(a, b, tol, initial_guess)
-    
-    return result, recursive_count, graph_x, graph_y
+    result = recursive_step(a, b, tol, initial_guess, 1)
+
+    graph_x = np.linspace(a, b, 100)
+    # Ensure graph_y is a list of floats
+    graph_y = [float(f(val)) for val in graph_x]
+
+    # Return as a tuple for app.py to unpack correctly
+    return result, recursive_count, graph_x.tolist(), graph_y, steps_log, initial_values

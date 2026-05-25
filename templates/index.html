@@ -95,7 +95,7 @@
         <div class="calculator-form">
             <div class="input-group">
                 <label for="func">Function \(f(x)\)</label>
-                <input type="text" id="func" placeholder="e.g., 2sin(x) + 3x^2" required>
+                <input type="text" id="func" placeholder="e.g., exp(2x) sin(3x)" required>
             </div>
             
             <div class="row">
@@ -125,27 +125,54 @@
             <p>Processing Math...</p>
         </div>
 
-        <!-- Results Display -->
+        <!-- Results Display (HIDDEN UNTIL CALCULATION) -->
         <div id="results" class="hidden result-area">
             <hr>
-            <h3>Calculation Results</h3>
+            <h2 class="section-title">Step-by-Step Solution</h2>
+
+            <!-- 1. TEXTBOOK BREAKDOWN -->
+            <div id="solution-breakdown" class="glass-card solution-paper">
+                <!-- Dynamically filled by JS -->
+            </div>
+
+            <!-- 2. RECURSION LOG -->
+            <div class="steps-container">
+                <h4>Full Recursion Log</h4>
+                <div class="table-responsive">
+                    <table id="steps-table">
+                        <thead>
+                            <tr>
+                                <th>Level</th>
+                                <th>Interval [a, b]</th>
+                                <th>Error</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="steps-body">
+                            <!-- JS will inject rows here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3. NUMERICAL SUMMARY -->
             <div class="result-grid">
                 <div class="res-item">
                     <span class="res-label">Approximate Value</span>
                     <span id="res-val" class="res-value highlight"></span>
                 </div>
                 <div class="res-item">
-                    <span class="res-label">Recursive Steps</span>
+                    <span class="res-label">Total Recursive Calls</span>
                     <span id="res-count" class="res-value"></span>
                 </div>
             </div>
+
             <div class="button-group">
-    <button class="copy-btn" onclick="copyResult()">Copy Result</button>
-    <button class="print-btn" onclick="downloadPDF()">Download Result</button>
-</div>
+                <button class="copy-btn" onclick="copyResult()">Copy Numerical Result</button>
+                <button class="download-btn" onclick="downloadPDF()">Download Full PDF Report</button>
+            </div>
 
-
-            <!-- Graph Container -->
+            <!-- 4. VISUALIZATION -->
             <div id="plot-container">
                 <h4>Function Visualization</h4>
                 <div id="graph-div" style="width:100%; height:350px; border-radius: 15px;"></div>
@@ -154,7 +181,7 @@
     </div>
 </section>
 
-<!-- Include Plotly.js for Graphing -->
+<!-- Scripts -->
 <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
@@ -162,20 +189,48 @@
     /* Section Specific Styles */
     .hero { padding: 80px 20px; background: linear-gradient(135deg, #ffd6e7 0%, #ffb6d5 100%); text-align: center; }
     .formula-box { background: rgba(255,255,255,0.4); padding: 20px; border-radius: 15px; display: inline-block; margin: 20px 0; }
+    
+    /* Calculator Form */
     .sample-container { margin-bottom: 25px; }
     .sample-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-    .sample-btn { background: #fff0f6; border: 1px solid #ffb6d5; color: #ff8fb1; padding: 6px 15px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+    .sample-btn { background: #fff0f6; border: 1px solid #ffb6d5; color: #ff8fb1; padding: 6px 15px; border-radius: 20px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; }
     .sample-btn:hover { background: #ff8fb1; color: white; }
-    .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin: 20px 0; }
-    .res-item { display: flex; flex-direction: column; background: #fff0f6; padding: 15px; border-radius: 12px; }
-    .res-label { font-size: 0.85rem; color: #666; }
-    .res-value { font-size: 1.4rem; font-weight: bold; color: #333; }
+
+    /* Results Styling */
+    .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
+    .res-item { display: flex; flex-direction: column; background: #fff0f6; padding: 20px; border-radius: 12px; text-align: center; }
+    .res-label { font-size: 0.85rem; color: #666; margin-bottom: 5px; }
+    .res-value { font-size: 1.5rem; font-weight: bold; color: #333; }
     .highlight { color: #ff8fb1; }
-    .example-badge { background: #ff8fb1; color: white; display: inline-block; padding: 4px 12px; border-radius: 10px; font-size: 0.8rem; margin-bottom: 10px; }
-    .final-ans { margin-top: 15px; color: #ff8fb1; border-top: 1px dashed #ffb6d5; padding-top: 10px; }
-    #plot-container { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
-    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #ff8fb1; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 10px auto; }
+
+    /* Solution Paper (Textbook Style) */
+    .solution-paper { background: #fff !important; border-left: 6px solid #ff8fb1; padding: 30px !important; line-height: 1.8; color: #333; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important; }
+    .solution-paper h3 { color: #ff8fb1; font-size: 1.3rem; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 25px; }
+    .solution-paper ul { list-style: none; padding: 15px; background: #fdf2f7; border-radius: 10px; margin: 15px 0; }
+    .solution-paper li { font-family: 'Courier New', Courier, monospace; font-size: 0.95rem; }
+
+    /* Recursion Table */
+    .steps-container { margin: 30px 0; background: white; padding: 20px; border-radius: 15px; box-shadow: inset 0 0 10px rgba(0,0,0,0.02); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th { background: #ffb6d5; color: white; padding: 12px; text-align: left; border-radius: 5px 5px 0 0; }
+    td { padding: 10px; border-bottom: 1px solid #fff0f6; }
+    .badge { padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; }
+    .badge.accepted { background: #e6ffed; color: #22863a; }
+    .badge.subdividing { background: #fffbdd; color: #735c0f; }
+
+    /* Buttons */
+    .button-group { display: flex; gap: 15px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+    .primary-btn, .copy-btn { background: #ff8fb1; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+    .download-btn { background: #444; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+    .secondary-btn { background: #eee; color: #666; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; }
+    .download-btn:hover { background: #000; }
+    .primary-btn:hover, .copy-btn:hover { background: #ff7096; }
+
+    /* Loader */
+    #loader { margin: 30px 0; text-align: center; color: #ff8fb1; font-weight: bold; }
+    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #ff8fb1; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 10px auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
 </style>
 
 <script>
@@ -184,7 +239,6 @@
         document.getElementById('lower').value = a;
         document.getElementById('upper').value = b;
         document.getElementById('tol').value = t;
-        // Scroll to calculator
         document.getElementById('calculator').scrollIntoView({behavior: 'smooth'});
     }
 </script>
